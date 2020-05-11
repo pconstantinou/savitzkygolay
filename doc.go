@@ -1,5 +1,3 @@
-package savitzkygolay
-
 /*
 savitzkygolay provides a filter on a set of data which provides
 an effective way of smoothing data that generally follows
@@ -29,3 +27,4 @@ The filter run on O(number of elements * size of window)
 
 Project unit tests generate outputs which illustrate the filter.
 */
+package savitzkygolay
