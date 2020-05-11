@@ -26,5 +26,8 @@ window size.
 The filter run on O(number of elements * size of window)
 
 Project unit tests generate outputs which illustrate the filter.
+
+The Go implementation was based on the JavaScript implementation: 
+  https://github.com/mljs/savitzky-golay
 */
 package savitzkygolay
