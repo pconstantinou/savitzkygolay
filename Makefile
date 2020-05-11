@@ -13,5 +13,10 @@ build:
 test:
 	go test -coverprofile=coverage.out
 
-doc:
-	${GOPATH}/bin/autoreadme -f
+coverage: test
+	curl -s https://codecov.io/bash | bash
+
+
+doc: coverage
+	${GOPATH}/bin/autoreadme -f  -template=README.md.template
+

@@ -1,4 +1,5 @@
-# savitzkygolay [![GoDoc](https://godoc.org/github.com/pconstantinou/savitzkygolay?status.svg)](https://godoc.org/github.com/pconstantinou/savitzkygolay)
+# savitzkygolay [![GoDoc](https://godoc.org/github.com/pconstantinou/savitzkygolay?status.svg)](https://godoc.org/github.com/pconstantinou/savitzkygolay) [![codecov](https://codecov.io/gh/pconstantinou/savitzkygolay/branch/master/graph/badge.svg)](https://codecov.io/gh/pconstantinou/savitzkygolay)
+
 * savitzkygolay provides a filter on a set of data which provides an effective way of smoothing data that generally follows curves found in polynomials.
 
 Download:
