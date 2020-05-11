@@ -1,6 +1,6 @@
 # savitzkygolay [![GoDoc](https://godoc.org/github.com/pconstantinou/savitzkygolay?status.svg)](https://godoc.org/github.com/pconstantinou/savitzkygolay) [![codecov](https://codecov.io/gh/pconstantinou/savitzkygolay/branch/master/graph/badge.svg)](https://codecov.io/gh/pconstantinou/savitzkygolay)
 
-* savitzkygolay provides a filter on a set of data which provides an effective way of smoothing data that generally follows curves found in polynomials.
+Package savitzkygolay provides a filter on a set of data which provides an effective way of smoothing data that generally follows curves found in polynomials.
 
 Download:
 ```shell
@@ -8,8 +8,7 @@ go get github.com/pconstantinou/savitzkygolay
 ```
 
 * * *
-*
-savitzkygolay provides a filter on a set of data which provides
+Package savitzkygolay provides a filter on a set of data which provides
 an effective way of smoothing data that generally follows
 curves found in polynomials. It is particularly good alternative
 to a moving average since it does not introduce a

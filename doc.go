@@ -1,5 +1,5 @@
-/**
-savitzkygolay provides a filter on a set of data which provides
+/*
+Package savitzkygolay provides a filter on a set of data which provides
 an effective way of smoothing data that generally follows
 curves found in polynomials. It is particularly good alternative
 to a moving average since it does not introduce a
