@@ -1,4 +1,4 @@
-/*
+/**
 savitzkygolay provides a filter on a set of data which provides
 an effective way of smoothing data that generally follows
 curves found in polynomials. It is particularly good alternative
@@ -9,7 +9,7 @@ Example:
 
 	noise := 15.0
 	xs := make([]float64, testSize, testSize)
-	ys = make([]float64, testSize, testSize)
+	ys := make([]float64, testSize, testSize)
 	for i := range xs {
 		ys[i] = 20 * math.Sin(float64(i)/math.Pi/6) +
 					(rand.Float64() * noise) - noise/2.0)
@@ -27,7 +27,7 @@ The filter run on O(number of elements * size of window)
 
 Project unit tests generate outputs which illustrate the filter.
 
-The Go implementation was based on the JavaScript implementation: 
+The Go implementation was based on the JavaScript implementation:
   https://github.com/mljs/savitzky-golay
 */
 package savitzkygolay
