@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"strings"
 	"testing"
 
 	assert "github.com/stretchr/testify/assert"
@@ -75,10 +76,10 @@ func Test_SavitzkyGolay_Line(t *testing.T) {
 	assert.Less(t, avg, float64(0.1), "Small average differences")
 	assert.Less(t, max, float64(0.5), "Small average differences")
 
-	visualTest(pairs, nil, copy, "line_smoothing.png")
+	visualTest(&pairs, nil, &copy, "Smoothed Line")
 }
 
-func Test_SavitzkyGolay_Sign(t *testing.T) {
+func Test_SavitzkyGolay_Sin(t *testing.T) {
 	pairs := makexyPairs(testSize)
 	for i := range pairs.xs {
 		pairs.ys[i] = 20 * math.Sin(float64(i)/math.Pi/6)
@@ -96,14 +97,14 @@ func Test_SavitzkyGolay_Sign(t *testing.T) {
 	assert.Less(t, avg, float64(0.1), "Small average differences")
 	assert.Less(t, max, float64(0.5), "Small average differences")
 
-	visualTest(pairs, nil, copy, "sin_smoothing.png")
+	visualTest(&pairs, nil, &copy, "Smoothed Sin")
 }
 
 func noise(size float64) float64 {
 	return (rand.Float64() * size) - size/2
 }
 
-func Test_SavitzkyGolay_SignNoise(t *testing.T) {
+func Test_SavitzkyGolay_SinNoise(t *testing.T) {
 	pairs := makexyPairs(testSize)
 	for i := range pairs.xs {
 		pairs.ys[i] = 20 * math.Sin(float64(i)/math.Pi/6)
@@ -119,7 +120,7 @@ func Test_SavitzkyGolay_SignNoise(t *testing.T) {
 
 	copy := pairs
 	copy.ys = sgy
-	visualTest(pairs, noisy, copy, "sin_noise_smoothing.png")
+	visualTest(&pairs, &noisy, &copy, "Smoothed Sin with Noise")
 }
 
 func (p *xyPairs) addNoise(n float64) xyPairs {
@@ -131,45 +132,65 @@ func (p *xyPairs) addNoise(n float64) xyPairs {
 	return noisy
 }
 
-func Test_SavitzkyGolay_SignNoise_1(t *testing.T) {
+func Test_SavitzkyGolay_SinNoise_1(t *testing.T) {
 	pairs := makexyPairs(testSize)
 	for i := range pairs.xs {
-		pairs.ys[i] = 20*math.Sin(float64(i)/math.Pi/4) +
+		pairs.ys[i] = 20 + 20*math.Sin(float64(i)/math.Pi/4) +
 			20*math.Sin(float64(i+10)/math.Pi/2)
 		pairs.xs[i] = float64(i)
 	}
-	noisy := pairs.addNoise(5.0)
+	noisy := pairs.addNoise(10.0)
 
-	filter, err := NewFilterWindow(15)
+	filter, err := NewFilter(7, 0, 1)
 	assert.NoError(t, err, "No filter initialization error expected")
 	sgy, err := filter.Process(pairs.ys, pairs.xs)
 	assert.NoError(t, err, "No error expected")
 
 	copy := pairs
 	copy.ys = sgy
-	visualTest(pairs, noisy, copy, "sin_noise_smoothing_order_2.png")
+	visualTest(&pairs, &noisy, &copy, "Smoothed Sin with Noise Using Single Order Polynomial")
 }
 
-func visualTest(original, noisy, filtered plotter.XYer, path string) {
+func visualTest(original, noisy, filtered *xyPairs, title string) {
 	p, _ := plot.New()
+	p.Title.Text = title
 	if original != nil {
 		line, _ := plotter.NewLine(original)
 		line.Color = color.Gray{Y: 128}
 		p.Add(line)
+		p.Legend.Add("Original", line)
 	}
 	if noisy != nil {
 		scatter, _ := plotter.NewScatter(noisy)
 		p.Add(scatter)
+		p.Legend.Add("Noisy Added", scatter)
+
+		avgXY := noisy
+		avgXY.ys = movingAverage(15, noisy.ys)
+		line, _ := plotter.NewLine(avgXY)
+		line.Color = color.RGBA{B: 255, G: 255}
+		p.Add(line)
+		p.Legend.Add("15-point Moving average", line)
+
+		avgXY = noisy
+		avgXY.ys = movingAverage(30, noisy.ys)
+		line, _ = plotter.NewLine(avgXY)
+		line.Color = color.RGBA{B: 128, G: 128}
+		p.Add(line)
+		p.Legend.Add("30-point Moving average", line)
+
 	}
 
 	if filtered != nil {
-		green := color.RGBA{G: 255}
+		green := color.RGBA{R: 255, B: 255}
 		line, _ := plotter.NewLine(filtered)
 		line.Color = green
 		p.Add(line)
+		p.Legend.Add("SG Filtered", line)
 	}
 
-	_ = p.Save(1512, 512, path)
+	path := strings.ToLower(strings.ReplaceAll(title, " ", "_")) + ".png"
+	_ = p.Save(512*2, 512, path)
 }
 
 func (p *xyPairs) difference(o *xyPairs) (max, average float64) {
@@ -181,4 +202,29 @@ func (p *xyPairs) difference(o *xyPairs) (max, average float64) {
 	}
 	average = average / float64(len(p.ys))
 	return max, average
+}
+
+func movingAverage(windowSize int, values []float64) []float64 {
+	var r []float64
+	var w []float64
+	for _, v := range values {
+		w = last(append(w, v), windowSize)
+		r = append(r, avg(w))
+	}
+	return r
+}
+
+func last(v []float64, l int) []float64 {
+	if len(v) > l {
+		v = v[len(v)-l : len(v)-1]
+	}
+	return v
+}
+func avg(v []float64) float64 {
+	r := 0.0
+	for _, a := range v {
+		r += a
+	}
+	return r / float64(len(v))
+
 }
